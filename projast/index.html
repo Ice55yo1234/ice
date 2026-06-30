@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AirGuard AI — PM2.5 Prediction & Health Risk Alert System</title>
+  <meta name="description" content="Machine Learning-Based PM2.5 Prediction and Health Risk Alert System — AI-powered air quality monitoring for Thailand">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌿</text></svg>">
+</head>
+<body>
+
+  <!-- ===== Loading Screen ===== -->
+  <div class="loading-screen" id="loadingScreen">
+    <div class="loader-container">
+      <div class="loader-logo">AirGuard AI</div>
+      <div class="loader-ring"></div>
+      <div class="loader-text">Initializing System...</div>
+    </div>
+  </div>
+
+  <!-- ===== Navigation ===== -->
+  <nav class="navbar" id="navbar">
+    <a href="#" class="nav-brand" onclick="navigateTo('home'); return false;">
+      <div class="nav-brand-icon"><i class="fas fa-wind"></i></div>
+      <span>AirGuard <span class="text-gradient">AI</span></span>
+    </a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#home" class="active" onclick="navigateTo('home')"><i class="fas fa-home"></i> Home</a></li>
+      <li><a href="#dashboard" onclick="navigateTo('dashboard')"><i class="fas fa-chart-line"></i> Dashboard</a></li>
+      <li><a href="#prediction" onclick="navigateTo('prediction')"><i class="fas fa-brain"></i> Prediction</a></li>
+      <li><a href="#dataset" onclick="navigateTo('dataset')"><i class="fas fa-database"></i> Dataset</a></li>
+      <li><a href="#about" onclick="navigateTo('about')"><i class="fas fa-info-circle"></i> About</a></li>
+      <li><a href="#contact" onclick="navigateTo('contact')"><i class="fas fa-envelope"></i> Contact</a></li>
+    </ul>
+    <div class="nav-actions">
+      <button class="theme-toggle" id="themeToggle" title="Toggle Dark/Light Mode">
+        <i class="fas fa-moon"></i>
+      </button>
+      <button class="mobile-toggle" id="mobileToggle">
+        <i class="fas fa-bars"></i>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ===== HOME PAGE ===== -->
+  <section class="page-section active" id="home">
+    <div class="hero">
+      <div class="hero-bg">
+        <img src="hero-bg.png" alt="Smart City Air Monitoring" loading="eager">
+      </div>
+      <div class="hero-overlay"></div>
+      <div class="hero-particles" id="heroParticles"></div>
+      <div class="hero-content">
+        <div class="hero-badge">
+          <i class="fas fa-flask"></i>
+          Machine Learning Research Project
+        </div>
+        <h1 class="hero-title">
+          Machine Learning-Based<br>
+          <span class="gradient-text">PM2.5 Prediction</span> &<br>
+          Health Risk Alert System
+        </h1>
+        <p class="hero-subtitle">
+          AI-powered air quality prediction system for helping citizens monitor PM2.5 levels and reduce health risks. Built with advanced machine learning models trained on real-time Air4Thai data.
+        </p>
+        <div class="hero-buttons">
+          <a href="#dashboard" class="btn btn-primary" onclick="navigateTo('dashboard')">
+            <i class="fas fa-chart-line"></i> View Dashboard
+          </a>
+          <a href="#prediction" class="btn btn-outline" onclick="navigateTo('prediction')">
+            <i class="fas fa-brain"></i> View Prediction
+          </a>
+        </div>
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <div class="hero-stat-value counter-value" data-target="105">0</div>
+            <div class="hero-stat-label">Monitoring Stations</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-value counter-value" data-target="365">0</div>
+            <div class="hero-stat-label">Days Tracked</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-value"><span class="counter-value" data-target="96">0</span>%</div>
+            <div class="hero-stat-label">Model Accuracy</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-value counter-value" data-target="77">0</div>
+            <div class="hero-stat-label">Provinces Covered</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== DASHBOARD PAGE ===== -->
+  <section class="page-section" id="dashboard">
+    <div class="section-container">
+      <div class="section-header animate-on-scroll">
+        <div class="section-badge"><i class="fas fa-chart-line"></i> Analytics Dashboard</div>
+        <h2 class="section-title">Real-Time Air Quality Overview</h2>
+        <p class="section-subtitle">Monitor PM2.5 levels across Thailand with AI-powered analytics and trend insights</p>
+      </div>
+
+      <!-- Info Bar -->
+      <div class="dashboard-info-bar animate-on-scroll">
+        <div class="info-item">
+          <i class="fas fa-calendar-day"></i>
+          <span>Latest Update: <span class="info-value" id="currentDate"></span></span>
+        </div>
+        <div class="info-item">
+          <i class="fas fa-clock"></i>
+          <span>Time: <span class="info-value" id="currentTime"></span></span>
+        </div>
+        <div class="info-item">
+          <i class="fas fa-cloud-sun"></i>
+          <span>Weather: <span class="info-value">28°C, Partly Cloudy</span></span>
+        </div>
+        <div class="info-item">
+          <span class="live-dot"></span>
+          <span class="info-value" style="color: var(--accent-500);">Live Monitoring</span>
+        </div>
+      </div>
+
+      <!-- Stats Cards -->
+      <div class="stats-grid animate-on-scroll">
+        <div class="stat-card pm25">
+          <div class="stat-card-header">
+            <span class="stat-label">Current PM2.5</span>
+            <div class="stat-icon pm25"><i class="fas fa-smog"></i></div>
+          </div>
+          <div class="stat-value"><span class="counter-value" data-target="37">0</span></div>
+          <div class="stat-unit">µg/m³</div>
+          <div class="stat-change negative"><i class="fas fa-arrow-down"></i> 12% from yesterday</div>
+        </div>
+        <div class="stat-card aqi">
+          <div class="stat-card-header">
+            <span class="stat-label">Air Quality Index</span>
+            <div class="stat-icon aqi"><i class="fas fa-gauge-high"></i></div>
+          </div>
+          <div class="stat-value"><span class="counter-value" data-target="103">0</span></div>
+          <div class="stat-unit">Moderate</div>
+          <div class="stat-change positive"><i class="fas fa-arrow-down"></i> 8% improvement</div>
+        </div>
+        <div class="stat-card health">
+          <div class="stat-card-header">
+            <span class="stat-label">Health Risk Level</span>
+            <div class="stat-icon health"><i class="fas fa-heart-pulse"></i></div>
+          </div>
+          <div class="stat-value" style="font-size: 1.8rem; color: #ff9800;">Moderate</div>
+          <div class="stat-unit">Sensitive Groups</div>
+          <div class="stat-change negative"><i class="fas fa-exclamation-triangle"></i> Caution advised</div>
+        </div>
+        <div class="stat-card accuracy">
+          <div class="stat-card-header">
+            <span class="stat-label">Prediction Accuracy</span>
+            <div class="stat-icon accuracy"><i class="fas fa-bullseye"></i></div>
+          </div>
+          <div class="stat-value"><span class="counter-value" data-target="96">0</span>%</div>
+          <div class="stat-unit">R² = 0.96</div>
+          <div class="stat-change positive"><i class="fas fa-arrow-up"></i> XGBoost Model</div>
+        </div>
+      </div>
+
+      <!-- Charts -->
+      <div class="charts-grid">
+        <div class="chart-card full-width animate-on-scroll">
+          <div class="chart-header">
+            <span class="chart-title"><i class="fas fa-chart-area"></i> PM2.5 Trend (2025)</span>
+            <span class="chart-period">Jan – Dec 2025</span>
+          </div>
+          <div class="chart-container">
+            <canvas id="trendChart"></canvas>
+          </div>
+        </div>
+        <div class="chart-card animate-on-scroll">
+          <div class="chart-header">
+            <span class="chart-title"><i class="fas fa-chart-bar"></i> Monthly Average PM2.5</span>
+            <span class="chart-period">2025</span>
+          </div>
+          <div class="chart-container">
+            <canvas id="barChart"></canvas>
+          </div>
+        </div>
+        <div class="chart-card animate-on-scroll">
+          <div class="chart-header">
+            <span class="chart-title"><i class="fas fa-chart-pie"></i> AQI Distribution</span>
+            <span class="chart-period">All Readings</span>
+          </div>
+          <div class="chart-container">
+            <canvas id="pieChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== PREDICTION PAGE ===== -->
+  <section class="page-section" id="prediction">
+    <div class="section-container">
+      <div class="section-header animate-on-scroll">
+        <div class="section-badge"><i class="fas fa-brain"></i> AI Prediction</div>
+        <h2 class="section-title">PM2.5 Prediction Engine</h2>
+        <p class="section-subtitle">Select a province and date to get AI-powered PM2.5 predictions with health recommendations</p>
+      </div>
+
+      <div class="prediction-layout">
+        <div class="prediction-form glass-card animate-on-scroll">
+          <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 24px; color: var(--text-primary);">
+            <i class="fas fa-sliders" style="color: var(--primary-500); margin-right: 8px;"></i>
+            Prediction Parameters
+          </h3>
+          <div class="form-group">
+            <label class="form-label" for="provinceSelect">
+              <i class="fas fa-map-marker-alt" style="color: var(--primary-500); margin-right: 4px;"></i> Province
+            </label>
+            <select class="form-select" id="provinceSelect">
+              <option value="">— Select Province —</option>
+              <option value="bangkok">Bangkok (กรุงเทพ)</option>
+              <option value="chiangmai">Chiang Mai (เชียงใหม่)</option>
+              <option value="chiangrai">Chiang Rai (เชียงราย)</option>
+              <option value="khonkaen">Khon Kaen (ขอนแก่น)</option>
+              <option value="nongkhai">Nong Khai (หนองคาย)</option>
+              <option value="nakhonratchasima">Nakhon Ratchasima (นครราชสีมา)</option>
+              <option value="udonthani">Udon Thani (อุดรธานี)</option>
+              <option value="songkhla">Songkhla (สงขลา)</option>
+              <option value="phuket">Phuket (ภูเก็ต)</option>
+              <option value="rayong">Rayong (ระยอง)</option>
+              <option value="lampang">Lampang (ลำปาง)</option>
+              <option value="saraburi">Saraburi (สระบุรี)</option>
+              <option value="nonthaburi">Nonthaburi (นนทบุรี)</option>
+              <option value="pathumthani">Pathum Thani (ปทุมธานี)</option>
+              <option value="samutprakan">Samut Prakan (สมุทรปราการ)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="dateInput">
+              <i class="fas fa-calendar" style="color: var(--primary-500); margin-right: 4px;"></i> Date
+            </label>
+            <input type="date" class="form-input" id="dateInput" min="2025-01-01" max="2025-12-31" value="2025-06-15">
+          </div>
+          <button class="btn-predict" id="predictBtn" onclick="runPrediction()">
+            <i class="fas fa-magic"></i> Run Prediction
+          </button>
+          <div style="margin-top: 16px; padding: 12px; border-radius: var(--radius-sm); background: var(--bg-glass); border: 1px solid var(--border-subtle); font-size: 0.78rem; color: var(--text-tertiary);">
+            <i class="fas fa-info-circle" style="color: var(--primary-500); margin-right: 4px;"></i>
+            Model: XGBoost Regressor trained on Air4Thai 2025 dataset with 105 station features
+          </div>
+        </div>
+
+        <div class="prediction-results" id="predictionResults">
+          <!-- Placeholder -->
+          <div class="prediction-placeholder" id="predictionPlaceholder">
+            <i class="fas fa-cloud-sun-rain"></i>
+            <h3>Ready to Predict</h3>
+            <p>Select a province and date, then click "Run Prediction" to see AI-powered PM2.5 forecasts.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== DATASET PAGE ===== -->
+  <section class="page-section" id="dataset">
+    <div class="section-container">
+      <div class="section-header animate-on-scroll">
+        <div class="section-badge"><i class="fas fa-database"></i> Dataset</div>
+        <h2 class="section-title">Training Data Overview</h2>
+        <p class="section-subtitle">Comprehensive PM2.5 daily average data from Air4Thai monitoring network</p>
+      </div>
+
+      <div class="dataset-info-grid animate-on-scroll">
+        <div class="dataset-info-card">
+          <div class="dataset-info-icon source"><i class="fas fa-satellite-dish"></i></div>
+          <div class="dataset-info-label">Source</div>
+          <div class="dataset-info-value">Air4Thai</div>
+        </div>
+        <div class="dataset-info-card">
+          <div class="dataset-info-icon dataset"><i class="fas fa-table"></i></div>
+          <div class="dataset-info-label">Dataset</div>
+          <div class="dataset-info-value">PM2.5 Daily</div>
+        </div>
+        <div class="dataset-info-card">
+          <div class="dataset-info-icon year"><i class="fas fa-calendar-alt"></i></div>
+          <div class="dataset-info-label">Year</div>
+          <div class="dataset-info-value">2025</div>
+        </div>
+        <div class="dataset-info-card">
+          <div class="dataset-info-icon records"><i class="fas fa-list-ol"></i></div>
+          <div class="dataset-info-label">Records</div>
+          <div class="dataset-info-value counter-value" data-target="370">0</div>
+        </div>
+        <div class="dataset-info-card">
+          <div class="dataset-info-icon columns"><i class="fas fa-columns"></i></div>
+          <div class="dataset-info-label">Columns</div>
+          <div class="dataset-info-value counter-value" data-target="106">0</div>
+        </div>
+      </div>
+
+      <div class="about-card animate-on-scroll" style="margin-bottom: 28px;">
+        <h3><i class="fas fa-info-circle"></i> Dataset Description</h3>
+        <p>
+          This dataset contains daily average PM2.5 concentrations (µg/m³) recorded from <strong>105 Air4Thai monitoring stations</strong> 
+          across Thailand throughout the year <strong>2025</strong>. Each row represents one day, and each column (station code) 
+          contains the PM2.5 reading for that station on that date. Station codes follow the Air4Thai naming convention 
+          (e.g., 02T = Bangkok, 05T = Chiang Mai area). The data is sourced from the 
+          <a href="http://air4thai.pcd.go.th" target="_blank" style="color: var(--primary-500);">Pollution Control Department (PCD)</a> 
+          of Thailand.
+        </p>
+      </div>
+
+      <div class="chart-card animate-on-scroll" style="margin-bottom: 28px;">
+        <div class="chart-header">
+          <span class="chart-title"><i class="fas fa-table"></i> Sample Data Preview</span>
+          <span class="chart-period">First 10 records • 8 columns shown</span>
+        </div>
+        <div class="table-container">
+          <table class="data-table" id="sampleTable">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>02T</th>
+                <th>05T</th>
+                <th>10T</th>
+                <th>11T</th>
+                <th>12T</th>
+                <th>59T</th>
+                <th>61T</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>2025-01-01</td><td>40.4</td><td>36.1</td><td>34.9</td><td>32.0</td><td>31.9</td><td>26.8</td><td>30.2</td></tr>
+              <tr><td>2025-01-02</td><td>43.2</td><td>36.6</td><td>36.7</td><td>34.3</td><td>34.6</td><td>25.8</td><td>32.8</td></tr>
+              <tr><td>2025-01-03</td><td>42.4</td><td>34.5</td><td>35.7</td><td>33.4</td><td>33.7</td><td>25.1</td><td>32.8</td></tr>
+              <tr><td>2025-01-04</td><td>41.8</td><td>32.8</td><td>32.6</td><td>33.0</td><td>32.9</td><td>29.5</td><td>31.7</td></tr>
+              <tr><td>2025-01-05</td><td>50.0</td><td>35.5</td><td>35.5</td><td>36.5</td><td>35.8</td><td>28.5</td><td>34.8</td></tr>
+              <tr><td>2025-01-06</td><td>52.0</td><td>40.3</td><td>40.7</td><td>39.4</td><td>39.5</td><td>29.0</td><td>38.2</td></tr>
+              <tr><td>2025-01-07</td><td>64.1</td><td>51.7</td><td>52.6</td><td>45.8</td><td>50.5</td><td>31.5</td><td>45.0</td></tr>
+              <tr><td>2025-01-08</td><td>69.0</td><td>63.3</td><td>63.6</td><td>56.8</td><td>57.8</td><td>44.3</td><td>54.1</td></tr>
+              <tr><td>2025-01-09</td><td>88.9</td><td>79.2</td><td>77.4</td><td>72.0</td><td>73.2</td><td>62.3</td><td>65.5</td></tr>
+              <tr><td>2025-01-10</td><td>65.7</td><td>56.8</td><td>56.2</td><td>50.1</td><td>52.3</td><td>38.5</td><td>48.9</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="chart-card animate-on-scroll">
+        <div class="chart-header">
+          <span class="chart-title"><i class="fas fa-chart-line"></i> Station Comparison</span>
+          <span class="chart-period">Top 5 Stations • 2025</span>
+        </div>
+        <div class="chart-container">
+          <canvas id="stationCompareChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== ABOUT PAGE ===== -->
+  <section class="page-section" id="about">
+    <div class="section-container">
+      <div class="section-header animate-on-scroll">
+        <div class="section-badge"><i class="fas fa-info-circle"></i> About Project</div>
+        <h2 class="section-title">Project Overview</h2>
+        <p class="section-subtitle">Understanding the science behind our PM2.5 prediction system</p>
+      </div>
+
+      <div class="about-grid">
+        <div class="about-card animate-on-scroll">
+          <h3><i class="fas fa-book-open"></i> Background</h3>
+          <p>
+            Air pollution, particularly PM2.5 (fine particulate matter ≤ 2.5 micrometers), poses severe health risks 
+            including respiratory diseases, cardiovascular problems, and premature mortality. Thailand experiences 
+            significant PM2.5 pollution, especially during the burning season (January–April) in the northern regions.
+            Traditional monitoring alone is insufficient — predictive capabilities are essential for proactive health 
+            protection. This project applies machine learning to forecast PM2.5 levels and provide actionable health 
+            risk alerts to citizens across Thailand.
+          </p>
+        </div>
+
+        <div class="about-card animate-on-scroll">
+          <h3><i class="fas fa-bullseye"></i> Objectives</h3>
+          <ul>
+            <li>Develop a machine learning model to accurately predict daily PM2.5 concentrations across 105 monitoring stations in Thailand</li>
+            <li>Classify air quality into health risk categories (Good, Moderate, Unhealthy for Sensitive Groups, Unhealthy, Very Unhealthy, Hazardous)</li>
+            <li>Provide personalized health recommendations based on predicted PM2.5 levels</li>
+            <li>Create an interactive, user-friendly web interface for real-time air quality visualization and prediction</li>
+            <li>Analyze temporal and spatial patterns in PM2.5 data to identify high-risk periods and regions</li>
+          </ul>
+        </div>
+
+        <div class="about-card animate-on-scroll">
+          <h3><i class="fas fa-cogs"></i> Machine Learning Workflow</h3>
+          <div class="workflow-steps">
+            <div class="workflow-step">
+              <div class="step-number">1</div>
+              <div class="step-content">
+                <h5>Data Collection</h5>
+                <p>Gather PM2.5 daily data from Air4Thai (105 stations, 365 days)</p>
+              </div>
+            </div>
+            <div class="workflow-step">
+              <div class="step-number">2</div>
+              <div class="step-content">
+                <h5>Data Preprocessing</h5>
+                <p>Handle missing values, normalize features, encode temporal data</p>
+              </div>
+            </div>
+            <div class="workflow-step">
+              <div class="step-number">3</div>
+              <div class="step-content">
+                <h5>Feature Engineering</h5>
+                <p>Create lag features, rolling averages, seasonal indicators</p>
+              </div>
+            </div>
+            <div class="workflow-step">
+              <div class="step-number">4</div>
+              <div class="step-content">
+                <h5>Model Training</h5>
+                <p>Train XGBoost, Random Forest, and compare with baselines</p>
+              </div>
+            </div>
+            <div class="workflow-step">
+              <div class="step-number">5</div>
+              <div class="step-content">
+                <h5>Evaluation</h5>
+                <p>Evaluate with RMSE, MAE, R² Score on held-out test data</p>
+              </div>
+            </div>
+            <div class="workflow-step">
+              <div class="step-number">6</div>
+              <div class="step-content">
+                <h5>Deployment</h5>
+                <p>Deploy model for real-time predictions via web interface</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="about-card animate-on-scroll">
+          <h3><i class="fas fa-sitemap"></i> System Architecture</h3>
+          <div class="architecture-flow">
+            <div class="arch-block data"><i class="fas fa-database"></i><br>Air4Thai Data</div>
+            <i class="fas fa-arrow-right arch-arrow"></i>
+            <div class="arch-block process"><i class="fas fa-cog"></i><br>Preprocessing</div>
+            <i class="fas fa-arrow-right arch-arrow"></i>
+            <div class="arch-block model"><i class="fas fa-brain"></i><br>XGBoost Model</div>
+            <i class="fas fa-arrow-right arch-arrow"></i>
+            <div class="arch-block output"><i class="fas fa-desktop"></i><br>Web Dashboard</div>
+          </div>
+        </div>
+
+        <div class="about-card animate-on-scroll">
+          <h3><i class="fas fa-wrench"></i> Tools & Technologies</h3>
+          <div class="tools-grid">
+            <div class="tool-item">
+              <i class="fab fa-python"></i>
+              <span>Python</span>
+            </div>
+            <div class="tool-item">
+              <span class="tool-emoji">🐼</span>
+              <span>Pandas</span>
+            </div>
+            <div class="tool-item">
+              <i class="fas fa-chart-line" style="color: #ff9800;"></i>
+              <span>Scikit-learn</span>
+            </div>
+            <div class="tool-item">
+              <i class="fas fa-bolt" style="color: #66bb6a;"></i>
+              <span>XGBoost</span>
+            </div>
+            <div class="tool-item">
+              <i class="fas fa-desktop" style="color: #ef5350;"></i>
+              <span>Streamlit</span>
+            </div>
+            <div class="tool-item">
+              <i class="fab fa-html5" style="color: #e44d26;"></i>
+              <span>HTML/CSS/JS</span>
+            </div>
+            <div class="tool-item">
+              <i class="fas fa-chart-bar" style="color: #42a5f5;"></i>
+              <span>Chart.js</span>
+            </div>
+            <div class="tool-item">
+              <i class="fas fa-table" style="color: #7c4dff;"></i>
+              <span>NumPy</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CONTACT PAGE ===== -->
+  <section class="page-section" id="contact">
+    <div class="section-container">
+      <div class="section-header animate-on-scroll">
+        <div class="section-badge"><i class="fas fa-users"></i> Team</div>
+        <h2 class="section-title">Project Members</h2>
+        <p class="section-subtitle">The team behind AirGuard AI</p>
+      </div>
+
+      <div class="contact-grid animate-on-scroll">
+        <div class="contact-card">
+          <div class="contact-avatar">👨‍💻</div>
+          <div class="contact-name">Member 1</div>
+          <div class="contact-role">Lead Developer & ML Engineer</div>
+          <div class="contact-info">
+            <div><i class="fas fa-code"></i> Data preprocessing & Model training</div>
+            <div><i class="fas fa-graduation-cap"></i> Data Science Student</div>
+          </div>
+        </div>
+        <div class="contact-card">
+          <div class="contact-avatar">👩‍💻</div>
+          <div class="contact-name">Member 2</div>
+          <div class="contact-role">Data Analyst & Visualization</div>
+          <div class="contact-info">
+            <div><i class="fas fa-chart-pie"></i> Dashboard & Data analysis</div>
+            <div><i class="fas fa-graduation-cap"></i> Data Science Student</div>
+          </div>
+        </div>
+        <div class="contact-card">
+          <div class="contact-avatar">👨‍🔬</div>
+          <div class="contact-name">Member 3</div>
+          <div class="contact-role">Frontend Developer & UX Designer</div>
+          <div class="contact-info">
+            <div><i class="fas fa-paint-brush"></i> UI/UX design & Web development</div>
+            <div><i class="fas fa-graduation-cap"></i> Data Science Student</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="university-card animate-on-scroll">
+        <div class="uni-icon"><i class="fas fa-university"></i></div>
+        <h3>Khon Kaen University</h3>
+        <p>Nong Khai Campus</p>
+        <p style="color: var(--text-tertiary); font-size: 0.88rem; margin-top: 8px;">
+          <i class="fas fa-map-marker-alt" style="color: var(--primary-500);"></i>
+          Faculty of Science and Arts · Data Science Program
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Footer ===== -->
+  <footer class="footer">
+    <p>
+      © 2025 <strong>AirGuard AI</strong> — Machine Learning-Based PM2.5 Prediction System · 
+      <a href="http://air4thai.pcd.go.th" target="_blank">Air4Thai</a> · 
+      Khon Kaen University, Nong Khai Campus
+    </p>
+  </footer>
+
+  <!-- Back to Top -->
+  <button class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+    <i class="fas fa-arrow-up"></i>
+  </button>
+
+  <script src="script.js"></script>
+</body>
+</html>
